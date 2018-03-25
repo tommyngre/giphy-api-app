@@ -1,0 +1,14 @@
+.gif-onload{
+  height:100px;
+  width:auto;
+}
+
+.r-container{
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+}
+
+.r-element{
+  padding:10px;
+}
