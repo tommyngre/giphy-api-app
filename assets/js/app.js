@@ -4,8 +4,10 @@ var topics = ["spongebob","patrick","squidward","sandy cheeks","howard blandy","
 var session = {
   search: '',
   searches: [],
+  topics: [],
   loadButtons: function(){
-    topics.forEach(topic => {
+    $("#topic-wrapper").text("");
+    session.topics.forEach(topic => {
       var button = $("<button class='col-md-2 btn btn-info btn-lg'>");
       button.text(topic);
       $("#topic-wrapper").append(button);
@@ -63,6 +65,16 @@ $("#show").on("click", function () {
   session.queryBuilder(query);
 });
 
+$("#save").on("click", function () {
+  var query = $("#user-input").val();
+  query = query.toLowerCase();
+
+  if (!(session.topics.indexOf(query) > -1)){
+  session.topics.push(query);
+  session.loadButtons(query);
+  }  
+});
+
 $("#topic-wrapper").on("click", ".btn", function(){
   var query = $(this).html();
   session.search = query;
@@ -82,5 +94,6 @@ $("#container").on("click", ".gif-onload", function(){
 })
 
 $(document).ready(function () {
+  session.topics = topics.map(x => x);
   session.loadButtons();
 })
