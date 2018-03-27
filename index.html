@@ -1,19 +1,40 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Page Title</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,900,900i|Lato" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
   <link rel="stylesheet" type="text/css" media="screen" href="assets/css/style.css" />
 </head>
+
 <body>
+  <div class="page">
 
-  <input id="user-input" type="text"></input>
-  <button id="show-me">show me gifs</button>
-  <div id="container"></div>
+    <div class="title-wrapper mx-auto text-center">
+      <h1><span  class="title">giphy</span><span class="title-2">search</span></h1>
+      <div id="controls" class="container">
+        <div class="row">
+          <input id="user-input" class="form-control form-control-lg" type="text"></input>
+        </div>
+        <div class="row">
+          <button id="show" class="col-sm-12 col-md-6 btn btn-primary btn-lg">Show Me</button>
+          <button id="save" class="col-sm-12 col-md-6 btn btn-secondary btn-lg">Save Search</button>
+        </div>
+        <div id="topic-wrapper" class="row"></div>
 
-  <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
-  <script src="./assets/js/app.js"></script>
+      </div>
+    </div>
+
+    <div id="container" class="mx-auto"></div>
+
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+    <script src="./assets/js/app.js"></script>
+  </div>
 </body>
+
 </html>
