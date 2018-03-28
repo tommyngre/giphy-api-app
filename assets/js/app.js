@@ -8,9 +8,12 @@ var session = {
   loadButtons: function(){
     $("#topic-wrapper").text("");
     session.topics.forEach(topic => {
-      var button = $("<button class='col-md-2 btn btn-info btn-lg'>");
+      var button = $("<button class='col-md-4 btn btn-info btn-lg'>");
+      var buttonSm = $("<button class='col-xs-4 btn btn-info'>");
       button.text(topic);
+      buttonSm.text(topic);
       $("#topic-wrapper").append(button);
+      $("#topic-wrapper-sm").append(buttonSm);
     })
   },
   queryBuilder: function (q) {

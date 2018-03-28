@@ -3,6 +3,34 @@
   border-radius: 12px;
 }
 
+#topic-wrapper{
+  /* nothin */  
+}
+
+#topic-wrapper-sm{
+  display:none;
+}
+
+#title-big{
+  /* nothin */
+}
+  
+#titles-sm{
+  position:relative;
+  display:block;
+}
+  
+#title-sm{
+  font-size:2em;
+  display:block;
+  position:absolute;
+}
+
+#title-2-sm{
+  font-size:2em;
+  position:absolute;
+}
+
 .gif-onload{
   height:200px;
   width:auto;
@@ -78,4 +106,45 @@
 .rating{
   font-family: 'Poppins', sans-serif;
   font-weight:900;
+}
+
+@media screen and (max-width: 600px) {
+
+  .title,.title-2{
+    font-size:2em;
+  }
+  
+  #topic-wrapper{
+    display:none;
+  }
+  
+  #title-big{
+    display:none;
+  }
+  
+}
+
+@media screen and (max-width: 400px) {
+
+#topic-wrapper-sm{
+  display:block;
+}
+
+.title,.title-2{
+  font-size:2em
+}
+
+#title-sm{
+  left:0px;
+  top:0px;
+}
+
+#title-2-sm{
+  width:100%;
+  top:30px;
+}
+
+.form-control-lg{
+  width:100%;
+  margin-top:50px;
 }
