@@ -36,10 +36,11 @@ var session = {
     this.drawGifs(r)
   },
   drawGifs: function (r) {
-    var results = $("<div class='r-container'>");
     var resultsLabel = $("<h2 class='results-label text-center'>")
     resultsLabel.text(session.search);
-    results.append(resultsLabel);
+
+    var results = $("<div class='r-container'>");
+    
 
     r.data.forEach(element => {
       console.log(element);
@@ -57,6 +58,8 @@ var session = {
     });
 
     $("#container").prepend(results);
+    $("#container").prepend(resultsLabel);
+
     // redirect to #container on click
   }
 }
