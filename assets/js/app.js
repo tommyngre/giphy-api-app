@@ -57,6 +57,7 @@ var session = {
     });
 
     $("#container").prepend(results);
+    // redirect to #container on click
   }
 }
 
