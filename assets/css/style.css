@@ -17,7 +17,7 @@
   
 #titles-sm{
   position:relative;
-  display:block;
+  display:none;
 }
   
 #title-sm{
@@ -108,7 +108,7 @@
   font-weight:900;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1100px) {
 
   .title,.title-2{
     font-size:2em;
@@ -117,14 +117,10 @@
   #topic-wrapper{
     display:none;
   }
-  
-  #title-big{
-    display:none;
-  }
-  
+    
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 500px) {
 
 #topic-wrapper-sm{
   display:block;
@@ -132,6 +128,14 @@
 
 .title,.title-2{
   font-size:2em
+}
+
+#titles-sm{
+  display:block;
+}
+
+#title-big{
+  display:none;
 }
 
 #title-sm{
@@ -147,4 +151,10 @@
 .form-control-lg{
   width:100%;
   margin-top:50px;
+}
+
+@media screen and (max-width: 300px) {
+.btn{
+  padding:.2rem .4rem
+}
 }
