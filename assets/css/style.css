@@ -114,13 +114,8 @@
     font-size:2em;
   }
   
-  #topic-wrapper{
-    display:none;
-  }
-    
 }
-
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 700px) {
 
 #topic-wrapper-sm{
   display:block;
@@ -147,6 +142,11 @@
   width:100%;
   top:30px;
 }
+
+#topic-wrapper{
+  display:none;
+}
+
 
 .form-control-lg{
   width:100%;

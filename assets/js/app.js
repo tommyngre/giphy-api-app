@@ -8,7 +8,7 @@ var session = {
   loadButtons: function(){
     $("#topic-wrapper").text("");
     session.topics.forEach(topic => {
-      var button = $("<button class='col-md-4 btn btn-info btn-lg'>");
+      var button = $("<button class='col-md-3 col-sm-4 btn btn-info'>");
       var buttonSm = $("<button class='col-xs-6 btn btn-info'>");
       button.text(topic);
       buttonSm.text(topic);
@@ -17,7 +17,7 @@ var session = {
     })
   },
   queryBuilder: function (q) {
-    var url = "https://api.giphy.com/v1/gifs/search?limit=3&offset=0&lang=en";
+    var url = "https://api.giphy.com/v1/gifs/search?limit=10&offset=0&lang=en";
     var key = "&api_key=Q3JTt1KN39pzl91g1Pyh7pBNzyX9XuPv";
     var query = "&q=" + q;
     url = url + key + query;
@@ -78,7 +78,7 @@ $("#save").on("click", function () {
   }  
 });
 
-$("#topic-wrapper").on("click", ".btn", function(){
+$("#topic-wrappers").on("click", ".btn", function(){
   var query = $(this).html();
   session.search = query;
   session.searches.push(query);
