@@ -4,6 +4,7 @@ var topics = ["spongebob", "patrick", "squidward", "sandy cheeks", "howard bland
 var session = {
   search: '',
   searches: [],
+  searchIndex: 0,
   topics: [],
   loadButtons: function () {
     $("#topic-wrapper").text("");
@@ -30,6 +31,7 @@ var session = {
       method: "GET"
     }).then(function (response) {
       session.handleResponse(response);
+      session.searchIndex++;
     })
   },
   handleResponse: function (r) {
@@ -38,14 +40,18 @@ var session = {
   drawGifs: function (r) {
     var resultsLabel = $("<h2 class='results-label text-center'>")
     resultsLabel.text(session.search);
+    resultsLabel.id = 'results-label-'+session.searchIndex; //##NEW
+    console.log(resultsLabel.id) //##NEW
 
     var results = $("<div class='r-container'>");
-    var left = $("<div id='arrow-left' class='arrow'>");
-    var right = $("<div id='arrow-right' class='arrow'>");
-
+    results.id = "r-container-"+session.searchIndex; //##NEW
+    var left = $("<div id='left-"+ session.searchIndex +"' class='arrow-left arrow'>"); //##NEW
+    $(left).val(session.searchIndex);
+    var right = $("<div id='right-"+ session.searchIndex +"' class='arrow-right arrow'>"); //##NEW
+    $(left).val(session.searchIndex);
 
     r.data.forEach(element => {
-      console.log(element);
+      //console.log(element);
       var result = $("<div class='r-element'>");
 
       var html =
@@ -69,56 +75,85 @@ var session = {
   }
 }
 
+//##PRETTY MUCH NEW
 $("body").unbind().on("click", ".arrow", function () {
   var arrow = this;
   var whichArrow = arrow.id;
+
+  //get # from id
+  var n = whichArrow.split("-");
+  n = n[1];
+  
+  if ($(this).hasClass('arrow-left')){
+    var leftArrowX = parseInt($(this).css("left"));
+    var rightArrowX = parseInt($("#right-"+n).css("right"));
+    console.log(rightArrowX);
+  } else {
+    var leftArrowX = parseInt($("#left-"+n).css("left"));
+    var rightArrowX = parseInt($(this).css("right"));
+  }
 
   var w = window.innerWidth;
 
   var scrollAmount = w - 100;
 
-  var arrowl = $("#arrow-left").css("left");
-  var arrowr = $("#arrow-right").css("right");
-
-  arrowl = parseInt(arrowl);
-  arrowr = parseInt(arrowr);
-
   var container = $(this).parent();
   var cx = container.scrollLeft();
 
-  if (whichArrow == 'arrow-left') {
+  //HANDLE CASES WHERE ROOM TO MOVE LESS THAN SCREENWIDTH
+  //ELSE ARROW POS GETS SCREWED UP
+  //SCROLLWIDTH PROP MIGHT HELP WITH RIGHT SIDE
+
+  if ($(arrow).hasClass('arrow-left')) {
     $(container).animate({ scrollLeft: cx - scrollAmount }, 500);
 
-    arrowl -= scrollAmount;
-    arrowr += scrollAmount;
+    //if all-the-way-scrolled left
+    if ( (leftArrowX - scrollAmount) < 0) {
+      leftArrowX = "10px";
+      rightArrowX = "10px";
+    } 
+    //if all-the-way-scrolled right
+    // else if () {
+    // }
+    else {
 
-    arrowl = arrowl + "px";
-    arrowr = arrowr + "px"
+    leftArrowX -= scrollAmount;
+    rightArrowX += scrollAmount;
 
-    $(arrow).css("left", arrowl);
-    $("#arrow-right").css("right", arrowr);
+    leftArrowX = leftArrowX + "px";
+    rightArrowX = rightArrowX + "px"
+
+    }
+
+    $(arrow).css("left", leftArrowX);
+    $("#right-"+n).css("right", rightArrowX);
 
   }
-  else if (whichArrow == 'arrow-right') {
+  else {
     $(container).animate({ scrollLeft: cx + scrollAmount }, 500);
+    leftArrowX += scrollAmount;
+    rightArrowX -= scrollAmount;
 
-    var arrowrNew = (arrowr - scrollAmount) + "px";
+    leftArrowX = leftArrowX + "px";
+    rightArrowX = rightArrowX + "px"
 
-    $(arrow).animate({
-      right: arrowrNew,
-    }, { 
-      duration: 500,
-      easing: "linear"
-    })
+    $(arrow).css("right", rightArrowX);
+    $("#left-"+n).css("left", leftArrowX);
 
-    var arrowlNew = (arrowl + scrollAmount) + "px";
+    //DON'T LIKE HOW THIS LOOKS :(
+    // $(arrow).animate({
+    //   right: rightArrowX,
+    // }, { 
+    //   duration: 500,
+    //   easing: "linear"
+    // })
 
-    $("#arrow-left").animate({
-      left: arrowlNew,
-    }, { 
-      duration: 500,
-      easing: "linear"
-    })
+    // $("#left-"+n).animate({
+    //   left: leftArrowX,
+    // }, { 
+    //   duration: 500,
+    //   easing: "linear"
+    // })
 
   }
 })
