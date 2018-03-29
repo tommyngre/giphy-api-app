@@ -73,26 +73,48 @@ $("body").unbind().on("click", ".arrow", function () {
   var arrow = this;
   var whichArrow = arrow.id;
 
+  var arrowl = $("#arrow-left").css("left");
+  var arrowr = $("#arrow-right").css("right");
+
+  arrowl = parseInt(arrowl);
+  arrowr = parseInt(arrowr);
+
   var container = $(this).parent();
   var cx = container.scrollLeft();
 
   if (whichArrow == 'arrow-left') {
     $(container).animate({ scrollLeft: cx - 500 }, 500);
 
-    var arrowx = $(arrow).css("left");
-    arrowx += 500;
-    arrowx = arrowx + "px";
-    $(arrow).css("left",arrowx + 500+"px")
+    arrowl -= 500;
+    arrowr += 500;
+
+console.log(arrowl, "left");
+console.log(arrowr, "right");
+
+
+    arrowl = arrowl + "px";
+    arrowr = arrowr + "px"
+
+    $(arrow).css("left",arrowl);
+    $("#arrow-right").css("right",arrowr);
+
   }
   else if (whichArrow == 'arrow-right') {
     $(container).animate({ scrollLeft: cx + 500 }, 500);
 
-    var arrowx = $(arrow).css("right");
-    arrowx = parseInt(arrowx);
-    arrowx -= 500;
-    arrowx = arrowx + "px";
-    $("#arrow-right").css("right",arrowx)
-    console.log($(arrowx));
+    arrowl += 500;
+    arrowr -= 500;
+
+    console.log(arrowl, "left");
+    console.log(arrowr, "right");
+    
+
+    arrowl = arrowl + "px";
+    arrowr = arrowr + "px";
+
+    $(arrow).css("right",arrowr);
+    $("#arrow-left").css("left",arrowl);
+
   }
 })
 
