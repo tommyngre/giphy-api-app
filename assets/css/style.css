@@ -95,11 +95,11 @@
 }
 #arrow-right {
   border-left: 50px solid black;
-  right:0px;
+  right:10px;
 }
 #arrow-left {
   border-right: 50px solid black;
-  left:0px;
+  left:10px;
 }
 
 .r-element{
