@@ -3,18 +3,10 @@
   border-radius: 12px;
 }
 
-#topic-wrapper{
-  /* nothin */  
-}
-
 #topic-wrapper-sm{
   display:none;
 }
 
-#title-big{
-  /* nothin */
-}
-  
 #titles-sm{
   position:relative;
   display:none;
@@ -176,5 +168,6 @@
 @media screen and (max-width: 300px) {
 .btn{
   padding:.2rem .4rem
+}
 }
 }

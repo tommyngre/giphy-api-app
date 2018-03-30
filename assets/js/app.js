@@ -137,10 +137,6 @@ $("body").unbind().on("click", ".arrow", function () {
   }
   else {
     const maxWidth = $('#r-container-'+n).attr('data-width');
-    console.log(scrollAmount, " scrollAmount");
-    console.log(maxWidth, " maxWidth");
-    console.log(rightArrowX, " right arrow x");
-    console.log(leftArrowX, " left arrow x");
 
     //gotta get this conditional sorted out. math, man... math
     if ( (rightArrowX) - (scrollAmount * 2) < (maxWidth * -1 ) ) {
@@ -196,7 +192,6 @@ $("#topic-wrappers").on("click", ".btn", function () {
 })
 
 $("#container").on("click", ".gif-onload", function () {
-  //console.log(this); // returns div
   if ($(this).attr("data-switch") == "0") {
     $(this).attr("src", $(this).attr("data-motion"));
     $(this).attr("data-switch", "1");
