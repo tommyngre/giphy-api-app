@@ -25,7 +25,6 @@ var session = {
     this.call(url);
   },
   call: function (url) {
-    console.log(url);
     $.ajax({
       url: url,
       method: "GET"
@@ -40,26 +39,22 @@ var session = {
   drawGifs: function (r) {
     var resultsLabel = $("<h2 class='results-label text-center'>")
     resultsLabel.text(session.search);
-    resultsLabel.id = 'results-label-'+session.searchIndex; //##NEW
-    console.log(resultsLabel.id) //##NEW
+    resultsLabel.id = 'results-label-' + session.searchIndex; //##NEW
 
     var results = $("<div class='r-container'>");
-    results.id = "r-container-"+session.searchIndex; //##NEW
-    var left = $("<div id='left-"+ session.searchIndex +"' class='arrow-left arrow'>"); //##NEW
+    $(results).attr("id","r-container-" + session.searchIndex); //##NEW
+    var left = $("<div id='left-" + session.searchIndex + "' class='arrow-left arrow'>"); //##NEW
     $(left).val(session.searchIndex);
-    var right = $("<div id='right-"+ session.searchIndex +"' class='arrow-right arrow'>"); //##NEW
+    var right = $("<div id='right-" + session.searchIndex + "' class='arrow-right arrow'>"); //##NEW
     $(left).val(session.searchIndex);
-
-    //declare var to store calculated width of elements
-    var resultsWidth = 0;
 
     r.data.forEach(element => {
-      //console.log(element);
+
       var result = $("<div class='r-element'>");
 
       var html =
         `
-        <img class="gif-onload" src="${element.images.fixed_width_small_still.url}" data-motion="${element.images.fixed_width_small.url}" data-still="${element.images.fixed_width_small_still.url}" data-switch="0">
+        <img id="search-${session.searchIndex}-img-${r.data.indexOf(element)}" class="gif-onload" src="${element.images.fixed_width_small_still.url}" data-motion="${element.images.fixed_width_small.url}" data-still="${element.images.fixed_width_small_still.url}" data-switch="0">
         <div class="img-rating">
           <span class="rating-label">rated</span>
           <span class="rating">${element.rating}</span>
@@ -67,41 +62,47 @@ var session = {
         `;
       result.html(html);
       results.append(result);
-      
-      //add element width to resultsWidth
-      ///hm...returning zero
-      width = $(result).width();
-      resultsWidth += $(result).width();
-      console.log(resultsWidth);
+
     });
-
-    //set resultsWidth as a property of results
-
 
     $(results).append(right);
     $("#container").prepend(results);
     $(results).prepend(left);
     $("#container").prepend(resultsLabel);
 
+    setTimeout(function () {
+      session.getResultContainerWidth();
+    }, 500)
     // redirect to #container on click
+  },
+  getResultContainerWidth: function () {
+    console.log(this.searchIndex, "searchIndex");
+    var containerWidth = 0;
+    for (i = 0; i < 10; i++) {
+      var id = "#search-" + (session.searchIndex-1) + "-img-" + i;
+      containerWidth += $(id).width();
+      containerWidth = Math.floor(containerWidth);
+    }
+    //set container div attribute to this
+    $('#r-container-'+(session.searchIndex-1)).attr("data-width",containerWidth);
   }
 }
 
 //##PRETTY MUCH NEW
 $("body").unbind().on("click", ".arrow", function () {
+
   var arrow = this;
   var whichArrow = arrow.id;
 
-  //get # from id
+  //get # from arrow id
   var n = whichArrow.split("-");
   n = n[1];
-  
-  if ($(this).hasClass('arrow-left')){
+
+  if ($(this).hasClass('arrow-left')) {
     var leftArrowX = parseInt($(this).css("left"));
-    var rightArrowX = parseInt($("#right-"+n).css("right"));
-    console.log(rightArrowX);
+    var rightArrowX = parseInt($("#right-" + n).css("right"));
   } else {
-    var leftArrowX = parseInt($("#left-"+n).css("left"));
+    var leftArrowX = parseInt($("#left-" + n).css("left"));
     var rightArrowX = parseInt($(this).css("right"));
   }
 
@@ -112,61 +113,60 @@ $("body").unbind().on("click", ".arrow", function () {
   var container = $(this).parent();
   var cx = container.scrollLeft();
 
-  //HANDLE CASES WHERE ROOM TO MOVE LESS THAN SCREENWIDTH
-  //ELSE ARROW POS GETS SCREWED UP
-  //SCROLLWIDTH PROP MIGHT HELP WITH RIGHT SIDE
-
   if ($(arrow).hasClass('arrow-left')) {
     $(container).animate({ scrollLeft: cx - scrollAmount }, 500);
 
     //if all-the-way-scrolled left
-    if ( (leftArrowX - scrollAmount) < 0) {
+    if ((leftArrowX - scrollAmount) < 0) {
       leftArrowX = "10px";
       rightArrowX = "10px";
-    } 
-    //if all-the-way-scrolled right
-    // else if () {
-    // }
+    }
     else {
 
-    leftArrowX -= scrollAmount;
-    rightArrowX += scrollAmount;
+      leftArrowX -= scrollAmount;
+      rightArrowX += scrollAmount;
 
-    leftArrowX = leftArrowX + "px";
-    rightArrowX = rightArrowX + "px"
+      leftArrowX = leftArrowX + "px";
+      rightArrowX = rightArrowX + "px"
 
     }
 
     $(arrow).css("left", leftArrowX);
-    $("#right-"+n).css("right", rightArrowX);
+    $("#right-" + n).css("right", rightArrowX);
 
   }
   else {
-    $(container).animate({ scrollLeft: cx + scrollAmount }, 500);
-    leftArrowX += scrollAmount;
-    rightArrowX -= scrollAmount;
+    const maxWidth = $('#r-container-'+n).attr('data-width');
+    console.log(scrollAmount, " scrollAmount");
+    console.log(maxWidth, " maxWidth");
+    console.log(rightArrowX, " right arrow x");
+    console.log(leftArrowX, " left arrow x");
 
-    leftArrowX = leftArrowX + "px";
-    rightArrowX = rightArrowX + "px"
+    //gotta get this conditional sorted out. math, man... math
+    if ( (rightArrowX) - (scrollAmount * 2) < (maxWidth * -1 ) ) {
 
+      $(container).animate({ scrollLeft: maxWidth }, 1000);
+
+      var rBefore = parseInt(rightArrowX);
+      rightArrowX = ( -1 * (maxWidth - scrollAmount) -100 ) + "px";
+      var rAfter = parseInt(rightArrowX);
+      var diff = rBefore-rAfter;
+
+      leftArrowX = leftArrowX + diff + "px";
+      rightArrowX = ( -1 * (maxWidth - scrollAmount) -100 ) + "px";
+
+    } else {
+
+      $(container).animate({ scrollLeft: cx + scrollAmount }, 500);
+      leftArrowX += scrollAmount;
+      rightArrowX -= scrollAmount;
+
+      leftArrowX = leftArrowX + "px";
+      rightArrowX = rightArrowX + "px"
+
+    }
     $(arrow).css("right", rightArrowX);
-    $("#left-"+n).css("left", leftArrowX);
-
-    //DON'T LIKE HOW THIS LOOKS :(
-    // $(arrow).animate({
-    //   right: rightArrowX,
-    // }, { 
-    //   duration: 500,
-    //   easing: "linear"
-    // })
-
-    // $("#left-"+n).animate({
-    //   left: leftArrowX,
-    // }, { 
-    //   duration: 500,
-    //   easing: "linear"
-    // })
-
+    $("#left-" + n).css("left", leftArrowX);
   }
 })
 
