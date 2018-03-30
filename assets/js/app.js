@@ -69,10 +69,14 @@ var session = {
       results.append(result);
       
       //add element width to resultsWidth
-      width += $(result)
+      ///hm...returning zero
+      width = $(result).width();
+      resultsWidth += $(result).width();
+      console.log(resultsWidth);
     });
 
     //set resultsWidth as a property of results
+
 
     $(results).append(right);
     $("#container").prepend(results);
