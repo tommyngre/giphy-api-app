@@ -50,6 +50,9 @@ var session = {
     var right = $("<div id='right-"+ session.searchIndex +"' class='arrow-right arrow'>"); //##NEW
     $(left).val(session.searchIndex);
 
+    //declare var to store calculated width of elements
+    var resultsWidth = 0;
+
     r.data.forEach(element => {
       //console.log(element);
       var result = $("<div class='r-element'>");
@@ -64,7 +67,12 @@ var session = {
         `;
       result.html(html);
       results.append(result);
+      
+      //add element width to resultsWidth
+      width += $(result)
     });
+
+    //set resultsWidth as a property of results
 
     $(results).append(right);
     $("#container").prepend(results);
