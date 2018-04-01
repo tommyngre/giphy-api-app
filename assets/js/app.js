@@ -2,9 +2,6 @@
 /// hide right arrow faster when results < window
 ///save presets to session storage
 ///save favorites to session storage
-///enlarge gif option
-////fas fa-expand
-////fas fa-compress
 
 var topics = ["spongebob", "patrick star", "squidward", "sandy cheeks", "howard blandy", "mr. krabs", "mrs. puff", "pearl krabs", "doodlebob"];
 var numberOfGifs = 10;
@@ -86,7 +83,7 @@ var session = {
 
       var html =
         `
-        <img id="search-${session.searchIndex}-img-${r.data.indexOf(element)}" class="gif-onload" src="${element.images.original_still.url}" data-motion="${element.images.original.url}" data-still="${element.images.original_still.url}" data-switch="0">
+        <img id="search-${session.searchIndex}-img-${r.data.indexOf(element)}" class="gif" src="${element.images.original_still.url}" data-motion="${element.images.original.url}" data-still="${element.images.original_still.url}" data-switch="0" data-width="${element.images.original.width}">
         <div class="img-rating">
         <span class="rating-label">rated</span>
           <span class="rating">${element.rating}</span>
@@ -176,21 +173,31 @@ var session = {
 }
 
 //create a new 'r-container' to display full-size elements
-function expand(element){
-  $(element).find('.rating-label').detach();
-  $(element).find('.rating').detach();
-  $(element).find('.fa-heart').detach();
+function expand(element) {
+  //remove a lot of the junk fom the elem
+  $(element).find('.img-rating').detach();
   $(element).addClass('mx-auto');
-  //$(element).children('img').css('width','50%');
+  //prepare modal for full size view
   let expandDiv = $("<div class='r-container'>")
-  .append(element);
-  $('#container').prepend(expandDiv);
+    .append(element);
+  $('#modal-container').prepend(expandDiv);
+  $('#modal').css('display', 'block');
 }
 
 //expand size of element
-$("#container").on("click", ".fa-expand", function(){
+$("#container").on("click", ".fa-expand", function () {
   let element = $(this).parent().parent().clone();
+  let image = $(element).find('img');
+  $(image).css('width', 'data-width' + "px")
+    .css('height', 'auto')
+    .attr('data-motion',1);
   expand(element);
+})
+
+//close/hide modal
+$('#modal').on('click', function (event) {
+  $(this).css('display', 'none');
+  $('#modal-container').html('');
 })
 
 //show message is search returns no results
@@ -346,8 +353,8 @@ function showNoFavsMesg() {
     .css("color", "navajowhite");
   setTimeout(function () {
     favButton.text("favorites")
-    .css("color","white");
-  },1200)
+      .css("color", "white");
+  }, 1200)
 }
 
 function showHidePresets(hideButton) {
@@ -379,15 +386,22 @@ $("#topic-wrappers").unbind().on("click", ".btn", function () {
   }
 })
 
-//switch img from still to motion
-$("#container").on("click", ".gif-onload", function () {
-  if ($(this).attr("data-switch") == "0") {
-    $(this).attr("src", $(this).attr("data-motion"));
-    $(this).attr("data-switch", "1");
+function toggleMotion(element) {
+  if ($(element).attr("data-switch") == "0") {
+    $(element).attr("src", $(element).attr("data-motion"));
+    $(element).attr("data-switch", "1");
   } else {
-    $(this).attr("src", $(this).attr("data-still"));
-    $(this).attr("data-switch", "0");
+    $(element).attr("src", $(element).attr("data-still"));
+    $(element).attr("data-switch", "0");
   }
+}
+
+//switch img from still to motion
+$("#container").on("click", ".gif", function () {
+  toggleMotion(this);
+})
+$("#modal-container").on("click", ".gif", function () {
+  toggleMotion(this);
 })
 
 $(document).ready(function () {
