@@ -101,31 +101,33 @@ var session = {
     // redirect to #container on click
   },
   getResultContainerWidth: function (param,array) {
+    var containerID = '';
+    var containerWidth = 0;
+    //diff handling for favorites
     if (param == "favs") {
-      var containerID=999;
-      var containerWidth = 0
+      containerID=999;
       session.favorites.forEach(favorite => {
         var img = $(favorite).children(img);
         containerWidth += $(img).width();
       })
       containerWidth += (session.favorites.length * 20);
-      containerWidth = Math.floor(containerWidth);
-      $('#r-container-999').attr("data-width", containerWidth);
+      //searches other than favs
     } else {
       //-1 because searchIndex already incremented at this point
-      var containerID = session.searchIndex - 1;
-      var containerWidth = 0;
-      for (i = 0; i < array.length; i++) {
+      console.log('here');
+      containerID = session.searchIndex - 1;
+      for (i = 0; i < array.data.length; i++) {
         var id = "#search-" + containerID + "-img-" + i;
         containerWidth += $(id).width();
         console.log($(id).width());
       }
       //correct for margins
-      containerWidth += (numberOfGifs * 20);
-      containerWidth = Math.floor(containerWidth);
-      //set container div attribute to this
-      $('#r-container-' + (session.searchIndex - 1)).attr("data-width", containerWidth);
+      containerWidth += (array.data.length * 20);
     }
+    //set container data-width
+    containerWidth = Math.floor(containerWidth);
+    $('#r-container-'+containerID).attr("data-width", containerWidth);
+
     //hide right arrow if with smalled than window
     var w = window.innerWidth;
     if (containerWidth < w) {
