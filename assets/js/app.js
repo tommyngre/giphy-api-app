@@ -1,3 +1,11 @@
+//todos
+/// hide right arrow faster when results < window
+///save presets to session storage
+///save favorites to session storage
+///enlarge gif option
+////fas fa-expand
+////fas fa-compress
+
 var topics = ["spongebob", "patrick star", "squidward", "sandy cheeks", "howard blandy", "mr. krabs", "mrs. puff", "pearl krabs", "doodlebob"];
 var numberOfGifs = 10;
 
@@ -54,8 +62,10 @@ var session = {
   handleResponse: function (r) {
     //if no data, do not continue
     if (r.data == "") {
+      showNoDataMesg();
       return;
     }
+    console.log(r);
     this.drawGifs(r)
   },
   drawGifs: function (r) {
@@ -76,14 +86,16 @@ var session = {
 
       var html =
         `
-        <img id="search-${session.searchIndex}-img-${r.data.indexOf(element)}" class="gif-onload" src="${element.images.fixed_height_still.url}" data-motion="${element.images.fixed_height.url}" data-still="${element.images.fixed_width_small_still.url}" data-switch="0">
+        <img id="search-${session.searchIndex}-img-${r.data.indexOf(element)}" class="gif-onload" src="${element.images.original_still.url}" data-motion="${element.images.original.url}" data-still="${element.images.original_still.url}" data-switch="0">
         <div class="img-rating">
         <span class="rating-label">rated</span>
           <span class="rating">${element.rating}</span>
-          <span>| fav?</span>
-          <span class="fav far fa-heart"</span>
-
-        </div>
+          <span class="icon fav far fa-heart"></span>
+          <span class="icon fas fa-expand"</span>
+          <!-- giphy seems to disable downloads and redirects to site hm...
+          <a class="dl" download="${element.title}" href="${element.images.original.mp4}"><span class="icon fas fa-download"</span></a>
+          -->
+          </div>
         `;
       result.html(html);
       results.append(result);
@@ -96,16 +108,16 @@ var session = {
     $("#container").prepend(resultsLabel);
 
     setTimeout(function () {
-      session.getResultContainerWidth('',r);
+      session.getResultContainerWidth('', r);
     }, 500)
     // redirect to #container on click
   },
-  getResultContainerWidth: function (param,array) {
+  getResultContainerWidth: function (param, array) {
     var containerID = '';
     var containerWidth = 0;
     //diff handling for favorites
     if (param == "favs") {
-      containerID=999;
+      containerID = 999;
       session.favorites.forEach(favorite => {
         var img = $(favorite).children(img);
         containerWidth += $(img).width();
@@ -114,27 +126,30 @@ var session = {
       //searches other than favs
     } else {
       //-1 because searchIndex already incremented at this point
-      console.log('here');
       containerID = session.searchIndex - 1;
       for (i = 0; i < array.data.length; i++) {
         var id = "#search-" + containerID + "-img-" + i;
         containerWidth += $(id).width();
-        console.log($(id).width());
       }
       //correct for margins
       containerWidth += (array.data.length * 20);
     }
     //set container data-width
     containerWidth = Math.floor(containerWidth);
-    $('#r-container-'+containerID).attr("data-width", containerWidth);
+    $('#r-container-' + containerID).attr("data-width", containerWidth);
 
     //hide right arrow if with smalled than window
     var w = window.innerWidth;
     if (containerWidth < w) {
-      $('#right-'+containerID).css('display','none');
+      $('#right-' + containerID).css('display', 'none');
     }
   },
   showFavorites: function () {
+    //check if favs
+    if (session.favorites.length < 1) {
+      showNoFavsMesg();
+      return;
+    }
     //build r-container of favs
     var resultsLabel = $("<h2 class='results-label text-center'>")
     resultsLabel.text("favorites");
@@ -158,6 +173,33 @@ var session = {
       session.getResultContainerWidth("favs");
     }, 500)
   }
+}
+
+//create a new 'r-container' to display full-size elements
+function expand(element){
+  $(element).find('.rating-label').detach();
+  $(element).find('.rating').detach();
+  $(element).find('.fa-heart').detach();
+  $(element).addClass('mx-auto');
+  //$(element).children('img').css('width','50%');
+  let expandDiv = $("<div class='r-container'>")
+  .append(element);
+  $('#container').prepend(expandDiv);
+}
+
+//expand size of element
+$("#container").on("click", ".fa-expand", function(){
+  let element = $(this).parent().parent().clone();
+  expand(element);
+})
+
+//show message is search returns no results
+function showNoDataMesg() {
+  let userInput = $("#user-input");
+  userInput.val("no results :(").css("color", "red");
+  setTimeout(function () {
+    userInput.val("i wanna see...").css("color", "#495057");
+  }, 1200)
 }
 
 //handle gallery scrolling
@@ -280,13 +322,33 @@ $("#save").on("click", function (e) {
   }
 });
 
+//add/remove favorites
 $("#container").on("click", ".fav", function () {
   //change from hollow black to solid red
-  $(this).removeClass('far').addClass('fas');
-  //get r-element
-  var fav = $(this).parent().parent();
-  session.favorites.push(fav);
+  let fav = $(this).parent().parent();
+  if ($(this).hasClass('far')) {
+    $(this).removeClass('far').addClass('fas')
+      .css("color", "red");
+    //get r-element
+    session.favorites.push(fav);
+  } else {
+    $(this).removeClass('fas').addClass('far')
+      .css("color", "black");
+    let i = session.favorites.indexOf(fav)
+    session.favorites.splice(i, 1);
+  }
 })
+
+//show no favorites message
+function showNoFavsMesg() {
+  let favButton = $(".favs");
+  favButton.text("no favs :(")
+    .css("color", "navajowhite");
+  setTimeout(function () {
+    favButton.text("favorites")
+    .css("color","white");
+  },1200)
+}
 
 function showHidePresets(hideButton) {
   //if show, hide
