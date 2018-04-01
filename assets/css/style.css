@@ -38,6 +38,14 @@
   text-align:center;  
 }
 
+.preset{
+  display:inline-block; 
+}
+
+.fas{
+  color:red;
+}
+
 .title{
   font-family: 'Poppins', sans-serif;
   font-weight:900;  
@@ -73,6 +81,7 @@
   /* justify-content: center; */
   position:relative;
   margin-top:20px;
+  margin-bottom:10px;
   overflow-x:hidden;
 }
 
@@ -118,6 +127,55 @@
 .rating{
   font-family: 'Poppins', sans-serif;
   font-weight:900;
+}
+
+ /* modified from animate.css defs
+  * https://github.com/daneden/animate.css/blob/master/animate.css 
+  */
+@-webkit-keyframes shake {
+  from,
+  to {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+
+  20% {
+    -webkit-transform: translate3d(-10px, 0, 0);
+    transform: translate3d(-10px, 0, 0);
+  }
+
+  60% {
+    -webkit-transform: translate3d(10px, 0, 0);
+    transform: translate3d(10px, 0, 0);
+  }
+}
+@keyframes shake {
+  from,
+  to {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+
+  20% {
+    -webkit-transform: translate3d(-10px, 0, 0);
+    transform: translate3d(-10px, 0, 0);
+  }
+
+  60% {
+    -webkit-transform: translate3d(10px, 0, 0);
+    transform: translate3d(10px, 0, 0);
+  }
+}
+
+.shake {
+  -webkit-animation-name: shake;
+  animation-name: shake;
+}
+.animated {
+  -webkit-animation-duration: .4s;
+  animation-duration: .4s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
 }
 
 @media screen and (max-width: 1100px) {
