@@ -1,14 +1,14 @@
 //todos
 /// hide right arrow faster when results < window
-///save presets to session storage
-///save favorites to session storage
 
-var topics = ["spongebob", "patrick star", "squidward", "sandy cheeks", "howard blandy", "mr. krabs", "mrs. puff", "pearl krabs", "doodlebob"];
+//if i had more time, 'topics' would retrieve 'trending topics' from somewhere
+var topics = ["spongebob", "patrick star", "squidward", "sandy cheeks", "mr. krabs", "mrs. puff"];
 var numberOfGifs = 10;
 
 var session = {
   search: '',
   searches: [],
+  savedSearches:[],
   searchIndex: 0,
   topics: [],
   favorites: [],
@@ -72,9 +72,9 @@ var session = {
 
     var results = $("<div class='r-container'>");
     $(results).attr("id", "r-container-" + session.searchIndex);
-    var left = $("<div id='left-" + session.searchIndex + "' class='animated arrow-left arrow'>"); //##NEW
+    var left = $("<div id='left-" + session.searchIndex + "' class='arrow-left arrow'>"); //##NEW
     $(left).val(session.searchIndex);
-    var right = $("<div id='right-" + session.searchIndex + "' class='animated arrow-right arrow'>"); //##NEW
+    var right = $("<div id='right-" + session.searchIndex + "' class='arrow-right arrow'>"); //##NEW
     $(right).val(session.searchIndex);
 
     r.data.forEach(element => {
@@ -87,17 +87,24 @@ var session = {
         <div class="img-rating">
         <span class="rating-label">rated</span>
           <span class="rating">${element.rating}</span>
+          <span class="icon fas fa-expand"></span>
           <span class="icon fav far fa-heart"></span>
-          <span class="icon fas fa-expand"</span>
+
           <!-- giphy seems to disable downloads and redirects to site hm...
           <a class="dl" download="${element.title}" href="${element.images.original.mp4}"><span class="icon fas fa-download"</span></a>
           -->
+
           </div>
         `;
       result.html(html);
       results.append(result);
 
     });
+
+    //hide at first
+    ///right only displayed if size warrants
+    $(left).css('display','none');
+    $(right).css('display','none');
 
     $(results).append(right);
     $("#container").prepend(results);
@@ -135,11 +142,16 @@ var session = {
     containerWidth = Math.floor(containerWidth);
     $('#r-container-' + containerID).attr("data-width", containerWidth);
 
-    //hide right arrow if with smalled than window
+    //only show right arrow if larger than window
+    $('#left-' + containerID).addClass('fadeIn').css('display', 'block');
     var w = window.innerWidth;
-    if (containerWidth < w) {
-      $('#right-' + containerID).css('display', 'none');
+    if (containerWidth > w) {
+      $('#right-' + containerID).addClass('fadeIn').css('display', 'block');
     }
+    setTimeout(function(){
+      $('#left-' + containerID).removeClass('fadeIn');
+      $('#right-' + containerID).removeClass('fadeIn');
+    },2000)
   },
   showFavorites: function () {
     //check if favs
@@ -148,18 +160,26 @@ var session = {
       return;
     }
     //build r-container of favs
-    var resultsLabel = $("<h2 class='results-label text-center'>")
+    ///first remove prev if exists
+    $('#r-container-999').remove();
+    $('#results-label-999').remove();
+    var resultsLabel = $("<h2 id='results-label-999' class='results-label text-center'>")
     resultsLabel.text("favorites");
-    resultsLabel.id = 'results-label-999'; //999 to keep numeric
 
     var results = $("<div class='r-container'>");
     $(results).attr("id", "r-container-999");
-    var left = $("<div id='left-999' class='animated arrow-left arrow'>");
-    var right = $("<div id='right-999' class='animated arrow-right arrow'>"); //##NEW
+    var left = $("<div id='left-999' class='arrow-left arrow'>");
+    var right = $("<div id='right-999' class='arrow-right arrow'>");
 
     session.favorites.forEach(favorite => {
       results.append(favorite);
     })
+
+    //hide at first
+    ///right only displayed if size warrants
+    $(left).css('display','none');
+    $(right).css('display','none');
+
 
     $(results).append(right);
     $("#container").prepend(results);
@@ -168,11 +188,11 @@ var session = {
 
     setTimeout(function () {
       session.getResultContainerWidth("favs");
-    }, 500)
+    }, 300)
   }
 }
 
-//create a new 'r-container' to display full-size elements
+//construct modal w expanded size gif
 function expand(element) {
   //remove a lot of the junk fom the elem
   $(element).find('.img-rating').detach();
@@ -184,17 +204,19 @@ function expand(element) {
   $('#modal').css('display', 'block');
 }
 
-//expand size of element
+//event that launches expanded size gif in modal
 $("#container").on("click", ".fa-expand", function () {
   let element = $(this).parent().parent().clone();
   let image = $(element).find('img');
   $(image).css('width', 'data-width' + "px")
     .css('height', 'auto')
-    .attr('data-motion',1);
+    .attr('data-switch', '0');
+  //switch to zero so toggle turns motion on
+  toggleMotion(image);
   expand(element);
 })
 
-//close/hide modal
+//event that closes/hides modal
 $('#modal').on('click', function (event) {
   $(this).css('display', 'none');
   $('#modal-container').html('');
@@ -209,7 +231,7 @@ function showNoDataMesg() {
   }, 1200)
 }
 
-//handle gallery scrolling
+//handle 'gallery' scrolling
 $("body").unbind().on("click", ".arrow", function () {
 
   var arrow = this;
@@ -244,7 +266,7 @@ $("body").unbind().on("click", ".arrow", function () {
     if ((leftArrowX - scrollAmount) < 0) {
       $(arrow).addClass("shake");
       setTimeout(function () {
-        $(arrow).removeClass("shake");
+        $(arrow).removeClass("shake fadeIn");
       }, 500);
 
       leftArrowX = "10px";
@@ -299,7 +321,7 @@ $("body").unbind().on("click", ".arrow", function () {
   }
 })
 
-//handle searches
+//event that initiates search
 $("#show").on("click", function (e) {
   e.preventDefault();
   //do nothin if null
@@ -310,6 +332,7 @@ $("#show").on("click", function (e) {
   //set session vars & query api
   session.search = query;
   session.searches.push(query);
+  localStorage.setItem('searches', JSON.stringify(session.searches));
   session.queryBuilder(query);
 });
 
@@ -325,6 +348,8 @@ $("#save").on("click", function (e) {
   query = query.toLowerCase();
   if (!(session.topics.indexOf(query) > -1)) {
     session.topics.push(query);
+    session.savedSearches.push(query);
+    localStorage.setItem('presets', JSON.stringify(session.savedSearches));
     session.loadButtons(query);
   }
 });
@@ -338,11 +363,14 @@ $("#container").on("click", ".fav", function () {
       .css("color", "red");
     //get r-element
     session.favorites.push(fav);
+    console.log(session.favorites);
+    localStorage.setItem('favorites',JSON.stringify(session.favorites));
   } else {
     $(this).removeClass('fas').addClass('far')
       .css("color", "black");
     let i = session.favorites.indexOf(fav)
     session.favorites.splice(i, 1);
+    localStorage.setItem('favorites',JSON.stringify(session.favorites));
   }
 })
 
@@ -371,8 +399,7 @@ function showHidePresets(hideButton) {
     $(".preset").css('display', 'inline-block');
   }
 }
-
-//presets and options
+//events that trigger secondary events (e.g. hide presets, save search)
 $("#topic-wrappers").unbind().on("click", ".btn", function () {
   if ($(this).hasClass('hide')) {
     showHidePresets(this);
@@ -386,6 +413,7 @@ $("#topic-wrappers").unbind().on("click", ".btn", function () {
   }
 })
 
+//toggles still/motion gif
 function toggleMotion(element) {
   if ($(element).attr("data-switch") == "0") {
     $(element).attr("src", $(element).attr("data-motion"));
@@ -395,8 +423,7 @@ function toggleMotion(element) {
     $(element).attr("data-switch", "0");
   }
 }
-
-//switch img from still to motion
+//events that trigger still/motion toggling
 $("#container").on("click", ".gif", function () {
   toggleMotion(this);
 })
@@ -404,7 +431,37 @@ $("#modal-container").on("click", ".gif", function () {
   toggleMotion(this);
 })
 
+//not implemented
+///favorites are stored as html elements
+///will sort out parsing json w html another time
+function getFavorites(){
+  let favorites = localStorage.getItem('favorites');
+  //favorites = JSON.parse(favorites);
+  console.log(favorites);
+  if (favorites == null) {
+    return;
+  }
+  favorites.forEach(favorite => {
+    session.favorites.push(favorite);
+  })
+}
+
+function getPresets(){
+  let presets = localStorage.getItem('presets');
+  presets = JSON.parse(presets);
+  if (presets == null) {
+    return;
+  }
+  console.log(presets);
+  presets.forEach(preset => {
+    session.savedSearches.push(preset);
+    session.topics.push(preset);
+  })
+}
+
 $(document).ready(function () {
   session.topics = topics.map(x => x);
+  getPresets();
+  //getFavorites(); // not implemented
   session.loadButtons();
 })
