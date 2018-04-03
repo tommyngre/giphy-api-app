@@ -1,6 +1,3 @@
-//handle full-size mode on mobile
-//stuff displaying twice in modal
-
 //if i had more time, 'topics' would retrieve 'trending topics' from somewhere
 var topics = ["spongebob", "patrick star", "squidward", "sandy cheeks", "mr. krabs", "mrs. puff"];
 var numberOfGifs = 10;
@@ -128,7 +125,6 @@ var session = {
         containerWidth += $(img).width();
       })
       containerWidth += (session.favorites.length * 20);
-      console.log(containerWidth);
       
       //searches other than favs
     } else {
@@ -200,6 +196,8 @@ var session = {
 
 //DISPLAY FULL-SIZE GIF IN MODAL
 function expand(element) {
+  //clear model-container of previous content
+  $('#modal-container').html("");
   //remove a lot of the junk fom the elem
   $(element).find('.img-rating').detach();
   $(element).addClass('mx-auto');
@@ -454,7 +452,6 @@ $("#container").on("click", ".fav", function () {
     session.favorites.splice(i, 1);
     //remove from localStorage
     let id = fav.find('img').attr('id');
-    
     let j = session.favoritesJSONFriendly.indexOf(id);
     console.log(session.favoritesJSONFriendly, " before splice");
     session.favoritesJSONFriendly.splice(j,1);
@@ -467,7 +464,21 @@ $("#container").on("click", ".fav", function () {
 $('#container').on('click', '.fa-expand', function () {
   let element = $(this).parent().parent().clone();
   let image = $(element).find('img');
-  $(image).css('width', 'data-width' + "px")
+
+  //check full size against window
+  const w = window.innerWidth;
+  const x = $(image).attr('data-width');
+  let expandWidth = ''
+  //if width great than screen size
+  ///make width screen size
+  if (x > w) {
+    expandWidth = Math.floor(w * .9);
+    //keep some margin
+  } else {
+    expandWidth =  x;
+  }
+
+  $(image).css('width', expandWidth + "px")
     .css('height', 'auto')
     .attr('data-switch', '0');
   //switch to zero so toggle turns motion on
