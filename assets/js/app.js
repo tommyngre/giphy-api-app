@@ -1,3 +1,6 @@
+//handle full-size mode on mobile
+//stuff displaying twice in modal
+
 //if i had more time, 'topics' would retrieve 'trending topics' from somewhere
 var topics = ["spongebob", "patrick star", "squidward", "sandy cheeks", "mr. krabs", "mrs. puff"];
 var numberOfGifs = 10;
@@ -121,11 +124,11 @@ var session = {
     if (param == "favs") {
       containerID = 999;
       session.favorites.forEach(favorite => {
-        var img = $(favorite).children(img);
-        console.log(containerWidth);
+        var img = `#${$(favorite).children(img).attr('id')}`;
         containerWidth += $(img).width();
       })
       containerWidth += (session.favorites.length * 20);
+      console.log(containerWidth);
       
       //searches other than favs
     } else {
@@ -154,10 +157,8 @@ var session = {
     setTimeout(function () {
       $('#left-' + containerID).removeClass('fadeIn');
       $('#right-' + containerID).removeClass('fadeIn');
-    }, 2000)
+    }, 500)
   },
-
-
   showFavorites: function () {
     //check if favs
     if (session.favorites.length < 1) {
@@ -193,7 +194,7 @@ var session = {
 
     setTimeout(function () {
       session.getResultContainerWidth("favs");
-    }, 400)
+    }, 600)
   }
 }
 
