@@ -86,7 +86,7 @@ var session = {
           <span class="rating">${element.rating}</span>
           <span class="icon fas fa-expand"></span>
           <span class="icon fav far fa-heart"></span>
-          <a class="dl" download="${element.title}" href="${element.images.original.mp4}"><span class="icon fas fa-download"</span></a>
+          <a class="dl" download="${element.title}" href="${element.images.original.url}"><span class="icon fas fa-download"</span></a>
           </div>
         `;
       result.html(html);
@@ -507,7 +507,7 @@ function getFavorites() {
           <span class="rating">${favorite.rating}</span>
           <span class="icon fas fa-expand"></span>
           <span class="icon fav fas fa-heart" style="color:red"></span>
-          <a class="dl" download="favorite" href="${favorite.still}"><span class="icon fas fa-download"</span></a>
+          <a class="dl" download="favorite" href="${favorite.motion}"><span class="icon fas fa-download"</span></a>
         </div>
       </div>
     `
