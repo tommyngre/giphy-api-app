@@ -1,6 +1,3 @@
-//todos
-/// hide right arrow faster when results < window
-
 //if i had more time, 'topics' would retrieve 'trending topics' from somewhere
 var topics = ["spongebob", "patrick star", "squidward", "sandy cheeks", "mr. krabs", "mrs. puff"];
 var numberOfGifs = 10;
@@ -8,10 +5,11 @@ var numberOfGifs = 10;
 var session = {
   search: '',
   searches: [],
-  savedSearches:[],
+  savedSearches: [],
   searchIndex: 0,
   topics: [],
   favorites: [],
+  favoritesJSONFriendly: [],
   //add buttons for search in searches
   loadButtons: function (param) {
     $("#topic-wrapper").text("");
@@ -62,7 +60,6 @@ var session = {
       showNoDataMesg();
       return;
     }
-    console.log(r);
     this.drawGifs(r)
   },
   drawGifs: function (r) {
@@ -103,8 +100,8 @@ var session = {
 
     //hide at first
     ///right only displayed if size warrants
-    $(left).css('display','none');
-    $(right).css('display','none');
+    $(left).css('display', 'none');
+    $(right).css('display', 'none');
 
     $(results).append(right);
     $("#container").prepend(results);
@@ -113,31 +110,37 @@ var session = {
 
     setTimeout(function () {
       session.getResultContainerWidth('', r);
-    }, 500)
-    // redirect to #container on click
+    }, 300)
+    // #TODO redirect to #container on click
   },
   getResultContainerWidth: function (param, array) {
     var containerID = '';
     var containerWidth = 0;
+    
     //diff handling for favorites
     if (param == "favs") {
       containerID = 999;
       session.favorites.forEach(favorite => {
         var img = $(favorite).children(img);
+        console.log(containerWidth);
         containerWidth += $(img).width();
       })
       containerWidth += (session.favorites.length * 20);
+      
       //searches other than favs
     } else {
+      
       //-1 because searchIndex already incremented at this point
       containerID = session.searchIndex - 1;
       for (i = 0; i < array.data.length; i++) {
         var id = "#search-" + containerID + "-img-" + i;
         containerWidth += $(id).width();
       }
+
       //correct for margins
       containerWidth += (array.data.length * 20);
     }
+
     //set container data-width
     containerWidth = Math.floor(containerWidth);
     $('#r-container-' + containerID).attr("data-width", containerWidth);
@@ -148,18 +151,21 @@ var session = {
     if (containerWidth > w) {
       $('#right-' + containerID).addClass('fadeIn').css('display', 'block');
     }
-    setTimeout(function(){
+    setTimeout(function () {
       $('#left-' + containerID).removeClass('fadeIn');
       $('#right-' + containerID).removeClass('fadeIn');
-    },2000)
+    }, 2000)
   },
+
+
   showFavorites: function () {
     //check if favs
     if (session.favorites.length < 1) {
       showNoFavsMesg();
       return;
     }
-    //build r-container of favs
+
+    //build 'r-container' of favs
     ///first remove prev if exists
     $('#r-container-999').remove();
     $('#results-label-999').remove();
@@ -175,11 +181,10 @@ var session = {
       results.append(favorite);
     })
 
-    //hide at first
-    ///right only displayed if size warrants
-    $(left).css('display','none');
-    $(right).css('display','none');
-
+    //hide until width calculated
+    ///display right only if size warrants
+    $(left).css('display', 'none');
+    $(right).css('display', 'none');
 
     $(results).append(right);
     $("#container").prepend(results);
@@ -188,11 +193,11 @@ var session = {
 
     setTimeout(function () {
       session.getResultContainerWidth("favs");
-    }, 300)
+    }, 400)
   }
 }
 
-//construct modal w expanded size gif
+//DISPLAY FULL-SIZE GIF IN MODAL
 function expand(element) {
   //remove a lot of the junk fom the elem
   $(element).find('.img-rating').detach();
@@ -204,25 +209,8 @@ function expand(element) {
   $('#modal').css('display', 'block');
 }
 
-//event that launches expanded size gif in modal
-$("#container").on("click", ".fa-expand", function () {
-  let element = $(this).parent().parent().clone();
-  let image = $(element).find('img');
-  $(image).css('width', 'data-width' + "px")
-    .css('height', 'auto')
-    .attr('data-switch', '0');
-  //switch to zero so toggle turns motion on
-  toggleMotion(image);
-  expand(element);
-})
 
-//event that closes/hides modal
-$('#modal').on('click', function (event) {
-  $(this).css('display', 'none');
-  $('#modal-container').html('');
-})
-
-//show message is search returns no results
+//SHOW 'NO RESULTS' MESSAGE
 function showNoDataMesg() {
   let userInput = $("#user-input");
   userInput.val("no results :(").css("color", "red");
@@ -231,7 +219,7 @@ function showNoDataMesg() {
   }, 1200)
 }
 
-//handle 'gallery' scrolling
+//CLICK EVENTS TO HANDLE 'GALLERY' SCROLLING
 $("body").unbind().on("click", ".arrow", function () {
 
   var arrow = this;
@@ -271,8 +259,10 @@ $("body").unbind().on("click", ".arrow", function () {
 
       leftArrowX = "10px";
       rightArrowX = "10px";
+
     }
     else {
+
       leftArrowX -= scrollAmount;
       rightArrowX += scrollAmount;
 
@@ -288,18 +278,19 @@ $("body").unbind().on("click", ".arrow", function () {
 
     //check if next click brings against right bounds 
     if ((rightArrowX) - (scrollAmount * 2) < (maxWidth * -1)) {
-
+    
       // check if already against right bounds
       if (rightArrowX == (Math.round(-1 * (maxWidth - scrollAmount) + 100))) {
         $(container).animate({ scrollLeft: 0 }, 1000);
 
         leftArrowX = "10px";
         rightArrowX = "10px";
+
       } else {
         $(container).animate({ scrollLeft: maxWidth }, 1000);
-
+    
         //set leftArrowX based on change in rightArrowX
-        /// more vars than strictly nec for readability
+        /// xtra vars than strictly nec for readability
         var rBefore = parseInt(rightArrowX);
         rightArrowX = (Math.round(-1 * (maxWidth - scrollAmount) + 100)) + "px";
         var rAfter = parseInt(rightArrowX);
@@ -313,7 +304,7 @@ $("body").unbind().on("click", ".arrow", function () {
       rightArrowX -= scrollAmount;
 
       leftArrowX = leftArrowX + "px";
-      rightArrowX = rightArrowX + "px"
+      rightArrowX = rightArrowX + "px";
 
     }
     $(arrow).css("right", rightArrowX);
@@ -321,8 +312,8 @@ $("body").unbind().on("click", ".arrow", function () {
   }
 })
 
-//event that initiates search
-$("#show").on("click", function (e) {
+//CLICK EVENT INITIATES SEARCH
+$("#show").unbind().on("click", function (e) {
   e.preventDefault();
   //do nothin if null
   var query = $("#user-input").val();
@@ -336,8 +327,8 @@ $("#show").on("click", function (e) {
   session.queryBuilder(query);
 });
 
-//add saved searches
-$("#save").on("click", function (e) {
+//CLICK EVENT TO ADD SAVED SEARCHES
+$("#save").unbind().on("click", function (e) {
   e.preventDefault();
   //do nothin if null
   var query = $("#user-input").val();
@@ -354,27 +345,7 @@ $("#save").on("click", function (e) {
   }
 });
 
-//add/remove favorites
-$("#container").on("click", ".fav", function () {
-  //change from hollow black to solid red
-  let fav = $(this).parent().parent();
-  if ($(this).hasClass('far')) {
-    $(this).removeClass('far').addClass('fas')
-      .css("color", "red");
-    //get r-element
-    session.favorites.push(fav);
-    console.log(session.favorites);
-    localStorage.setItem('favorites',JSON.stringify(session.favorites));
-  } else {
-    $(this).removeClass('fas').addClass('far')
-      .css("color", "black");
-    let i = session.favorites.indexOf(fav)
-    session.favorites.splice(i, 1);
-    localStorage.setItem('favorites',JSON.stringify(session.favorites));
-  }
-})
-
-//show no favorites message
+//SHOW 'NO FAVORITES' MESSAGE
 function showNoFavsMesg() {
   let favButton = $(".favs");
   favButton.text("no favs :(")
@@ -385,6 +356,7 @@ function showNoFavsMesg() {
   }, 1200)
 }
 
+//SHOW/HIDE PRESETS (most useful for mobile)
 function showHidePresets(hideButton) {
   //if show, hide
   if ($(hideButton).attr('data-shown') == '1') {
@@ -399,7 +371,7 @@ function showHidePresets(hideButton) {
     $(".preset").css('display', 'inline-block');
   }
 }
-//events that trigger secondary events (e.g. hide presets, save search)
+//CLICK EVENTS THAT TRIGGER SECONDARY FUNCTIONS (e.g. hide presets, save search)
 $("#topic-wrappers").unbind().on("click", ".btn", function () {
   if ($(this).hasClass('hide')) {
     showHidePresets(this);
@@ -413,7 +385,7 @@ $("#topic-wrappers").unbind().on("click", ".btn", function () {
   }
 })
 
-//toggles still/motion gif
+//TOGGLE STILL/MOTION
 function toggleMotion(element) {
   if ($(element).attr("data-switch") == "0") {
     $(element).attr("src", $(element).attr("data-motion"));
@@ -423,7 +395,25 @@ function toggleMotion(element) {
     $(element).attr("data-switch", "0");
   }
 }
-//events that trigger still/motion toggling
+
+//CLICK EVENTS TRIGGER FULL-SIZE MODAL VIEW
+$('#container').unbind().on('click', '.fa-expand', function () {
+  let element = $(this).parent().parent().clone();
+  let image = $(element).find('img');
+  $(image).css('width', 'data-width' + "px")
+    .css('height', 'auto')
+    .attr('data-switch', '0');
+  //switch to zero so toggle turns motion on
+  toggleMotion(image);
+  expand(element);
+})
+//event that closes/hides modal
+$('#modal').unbind().on('click', function (event) {
+  $(this).css('display', 'none');
+  $('#modal-container').html('');
+})
+
+// CLICK EVENTS TRIGGER STILL/MOTION TOGGLE
 $("#container").on("click", ".gif", function () {
   toggleMotion(this);
 })
@@ -431,28 +421,98 @@ $("#modal-container").on("click", ".gif", function () {
   toggleMotion(this);
 })
 
-//not implemented
-///favorites are stored as html elements
-///will sort out parsing json w html another time
-function getFavorites(){
+//CLICK EVENT TO ADD/REMOVE FAVORITES
+$("#container").on("click", ".fav", function () {
+  //change from hollow black to solid red
+  let fav = $(this).parent().parent();
+  if ($(this).hasClass('far')) {
+    $(this).removeClass('far').addClass('fas')
+      .css("color", "red");
+    //get r-element
+    ///this is sufficient for in-session storage,
+    session.favorites.push(fav);
+    ///JSON/localStorage--friendly data modeal
+    var newFav = {};
+    var img = fav.find('img');
+    //assign id a random # favs never have same id
+    ///fingers crossed
+    newFav.id = `${img.attr('id')}-${Math.round(Math.random() * 99999)}`;
+    newFav.still = img.attr('data-still');
+    newFav.motion = img.attr('data-motion');
+    newFav.width = img.attr('data-width');
+    newFav.rating = fav.find('.rating').text();
+    console.log(session.favoritesJSONFriendly, " before add");
+    session.favoritesJSONFriendly.push(newFav);
+    console.log(session.favoritesJSONFriendly, " after add");
+    localStorage.setItem('favorites', JSON.stringify(session.favoritesJSONFriendly));
+  } else {
+    $(this).removeClass('fas').addClass('far')
+      .css("color", "black");
+    //remove from in-session storage
+    let i = session.favorites.indexOf(fav);
+    session.favorites.splice(i, 1);
+    //remove from localStorage
+    let id = fav.find('img').attr('id');
+    
+    let j = session.favoritesJSONFriendly.indexOf(id);
+    console.log(session.favoritesJSONFriendly, " before splice");
+    session.favoritesJSONFriendly.splice(j,1);
+    console.log(session.favoritesJSONFriendly, " after splice");
+    localStorage.setItem('favorites', JSON.stringify(session.favoritesJSONFriendly));
+  }
+})
+
+//CLICK EVENTS TRIGGER FULL-SIZE MODAL VIEW
+$('#container').on('click', '.fa-expand', function () {
+  let element = $(this).parent().parent().clone();
+  let image = $(element).find('img');
+  $(image).css('width', 'data-width' + "px")
+    .css('height', 'auto')
+    .attr('data-switch', '0');
+  //switch to zero so toggle turns motion on
+  toggleMotion(image);
+  expand(element);
+})
+//event that closes/hides modal
+$('#modal').unbind().on('click', function (event) {
+  $(this).css('display', 'none');
+  $('#modal-container').html('');
+})
+
+//GET FAVORITES FROM LOCALSTORAGE
+function getFavorites() {
   let favorites = localStorage.getItem('favorites');
-  //favorites = JSON.parse(favorites);
-  console.log(favorites);
   if (favorites == null) {
     return;
   }
+  favorites = JSON.parse(favorites);
   favorites.forEach(favorite => {
-    session.favorites.push(favorite);
+
+    //keep favorites in favoritesJSONFriendly
+    session.favoritesJSONFriendly.push(favorite);
+    var favAsHTML =
+      `
+      <div class="r-element">
+        <img id="${favorite.id}" class="gif" src="${favorite.still}" data-motion="${favorite.motion}" data-still="${favorite.still}" data-switch="0" data-width="${favorite.width}">
+        <div class="img-rating">
+          <span class="rating-label">rated</span>
+          <span class="rating">${favorite.rating}</span>
+          <span class="icon fas fa-expand"></span>
+          <span class="icon fav fas fa-heart" style="color:red"></span>
+        </div>
+      </div>
+    `
+    session.favorites.push(favAsHTML);
   })
 }
 
-function getPresets(){
+//GET 'PRESETS' FROM LOCALSTORAGE
+function getPresets() {
   let presets = localStorage.getItem('presets');
   presets = JSON.parse(presets);
   if (presets == null) {
     return;
   }
-  console.log(presets);
   presets.forEach(preset => {
     session.savedSearches.push(preset);
     session.topics.push(preset);
@@ -462,6 +522,6 @@ function getPresets(){
 $(document).ready(function () {
   session.topics = topics.map(x => x);
   getPresets();
-  //getFavorites(); // not implemented
+  getFavorites();
   session.loadButtons();
 })
