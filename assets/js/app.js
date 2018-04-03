@@ -507,6 +507,7 @@ function getFavorites() {
           <span class="rating">${favorite.rating}</span>
           <span class="icon fas fa-expand"></span>
           <span class="icon fav fas fa-heart" style="color:red"></span>
+          <a class="dl" download="favorite" href="${favorite.still}"><span class="icon fas fa-download"</span></a>
         </div>
       </div>
     `
