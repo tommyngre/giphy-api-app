@@ -15,9 +15,4 @@
 * Click the expand icon of a result in order to launch a modal with the full-size gif. If the full size of the gif is small, this might seem like an anti-climactic feature, but the effect is cool for larger images. Click anywhere to dismiss the modal
 * Click the heart icon of a result in order to store it to favorites.
 * **Note: the implementation of this feature is partial. Initially, favorites were stored as HTML elements. But when I tried to store them in localStorage, I discovered the JSON wouldn't parse. Thereafter, I started storing favorites as JSON object and drawing them into HTML on page load. I achieved that (i.e. favorites now store to/load from localStorage), but I haven't yet totally reconciled the original "favorites" data model with the new one, so there are some bugs.**
-* Lastly, there is an implemented feature which is currently hidden because I suspect it is intentionally suppressed by Giphy. The feature would allow download of the gifs with one click. This feature could be enabled by un-commenting out this one line of javascript, but it will not work, so... ¯\_(ツ)_/¯ 
-```
-<!-- giphy seems to disable downloads and redirects to site hm...
-<a class="dl" download="${element.title}" href="${element.images.original.mp4}"><span class="icon fas fa-download"</span></a>
--->
-``
+* Lastly, click the blue "download" icon of a result in order to download it
