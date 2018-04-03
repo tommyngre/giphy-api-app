@@ -110,7 +110,7 @@ var session = {
 
     setTimeout(function () {
       session.getResultContainerWidth('', r);
-    }, 300)
+    }, 600)
     // #TODO redirect to #container on click
   },
   getResultContainerWidth: function (param, array) {
