@@ -86,11 +86,7 @@ var session = {
           <span class="rating">${element.rating}</span>
           <span class="icon fas fa-expand"></span>
           <span class="icon fav far fa-heart"></span>
-
-          <!-- giphy seems to disable downloads and redirects to site hm...
           <a class="dl" download="${element.title}" href="${element.images.original.mp4}"><span class="icon fas fa-download"</span></a>
-          -->
-
           </div>
         `;
       result.html(html);
